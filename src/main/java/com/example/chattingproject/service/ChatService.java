@@ -26,6 +26,7 @@ public class ChatService {
         //채팅방 최근 생성 순으로 반환
         List<ChatRoom> result = new ArrayList<>(chatRooms.values());
         Collections.reverse(result);
+        log.info("result {}",result);
 
         return result;
     }
@@ -40,5 +41,8 @@ public class ChatService {
         ChatRoom chatRoom = ChatRoom.create(name);
         chatRooms.put(chatRoom.getRoomId(), chatRoom);
         return chatRoom;
+    }
+    public void deleteRoom(){
+        chatRooms.clear();
     }
 }

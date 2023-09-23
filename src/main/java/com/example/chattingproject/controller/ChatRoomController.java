@@ -4,6 +4,7 @@ package com.example.chattingproject.controller;
 import com.example.chattingproject.model.ChatRoom;
 import com.example.chattingproject.service.ChatService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +13,11 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/chat")
 public class ChatRoomController {
     private final ChatService chatService;
+
 
     // 채팅 리스트 화면
     @GetMapping("/room")
@@ -32,6 +35,12 @@ public class ChatRoomController {
     @ResponseBody
     public ChatRoom createRoom(@RequestParam String name) {
         return chatService.createRoom(name);
+    }
+    // 채팅방 전체삭제
+    @DeleteMapping("/rooms")
+    @ResponseBody
+    public void deleteRoom(){
+        chatService.deleteRoom();
     }
     // 채팅방 입장 화면
     @GetMapping("/room/enter/{roomId}")

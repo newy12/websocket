@@ -27,6 +27,9 @@
         <div class="input-group-append">
             <button class="btn btn-primary" type="button" @click="createRoom">채팅방 개설</button>
         </div>
+        <div class="input-group-append">
+            <button class="btn btn-warning" type="button" @click="deleteRoom">채팅방 전체 삭제</button>
+        </div>
     </div>
     <ul class="list-group">
         <li class="list-group-item list-group-item-action" v-for="item in chatrooms" v-bind:key="item.roomId" v-on:click="enterRoom(item.roomId)">
@@ -52,6 +55,24 @@
             findAllRoom: function() {
                 axios.get('/chat/rooms').then(response => { this.chatrooms = response.data;});
             },
+            deleteRoom: function() {
+                axios.delete('/chat/rooms')
+                    .then(
+                        response => {
+                            console.log(response.chatrooms);
+                            if(response.chatrooms == []){
+                                alert("삭제할 채팅방이 존재하지 않습니다.");
+                                localStorage.clear();
+                                this.findAllRoom();
+                            }else{
+                                alert("채팅방이 전부 삭제되었습니다.");
+                                this.chatrooms = [];
+                                localStorage.clear();
+                                this.findAllRoom();
+                            }
+                        }
+                    )
+            },
             createRoom: function() {
                 if("" === this.room_name) {
                     alert("방 제목을 입력해 주십시요.");
@@ -76,8 +97,9 @@
                     localStorage.setItem('wschat.sender',sender);
                     localStorage.setItem('wschat.roomId',roomId);
                     location.href="/chat/room/enter/"+roomId;
+                }else{
+                    alert("대화명 입력이 필수 입니다.");
                 }
-                alert("대화명 입력이 필수 입니다.");
             }
         }
     });
