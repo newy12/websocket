@@ -23,7 +23,7 @@
         <div class="input-group-prepend">
             <label class="input-group-text">방제목</label>
         </div>
-        <input type="text" class="form-control" v-model="room_name" v-on:keyup.enter="createRoom">
+        <input type="text" class="form-control" v-model="room_name" v-on:keyup.enter="createRoom" placeholder="방제목을 입력해주세요.">
         <div class="input-group-append">
             <button class="btn btn-primary" type="button" @click="createRoom">채팅방 개설</button>
         </div>
@@ -56,22 +56,21 @@
                 axios.get('/chat/rooms').then(response => { this.chatrooms = response.data;});
             },
             deleteRoom: function() {
-                axios.delete('/chat/rooms')
-                    .then(
-                        response => {
-                            console.log(response.chatrooms);
-                            if(response.chatrooms == []){
-                                alert("삭제할 채팅방이 존재하지 않습니다.");
-                                localStorage.clear();
-                                this.findAllRoom();
-                            }else{
-                                alert("채팅방이 전부 삭제되었습니다.");
-                                this.chatrooms = [];
-                                localStorage.clear();
-                                this.findAllRoom();
+                if(confirm("삭제 하시겠습니까?")){
+                    axios.delete('/chat/rooms')
+                        .then(
+                            response => {
+                                console.log(response.chatrooms);
+                                    alert("채팅방이 전부 삭제되었습니다.");
+                                    this.chatrooms = [];
+                                    localStorage.clear();
+                                    this.findAllRoom();
                             }
-                        }
-                    )
+                        )
+                }else{
+                    this.findAllRoom();
+                }
+
             },
             createRoom: function() {
                 if("" === this.room_name) {

@@ -11,4 +11,8 @@ public class MainController {
     public String main(){
         return "chat/room";
     }
+    @GetMapping("/test")
+    public String test(){
+        return "chat/newChat";
+    }
 }

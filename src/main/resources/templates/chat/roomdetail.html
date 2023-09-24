@@ -9,6 +9,25 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/dist/css/bootstrap.min.css">
   <style>
+    .chat-container {
+      width: 600px; /* 원하는 너비 설정 */
+      height: 400px; /* 원하는 높이 설정 */
+      border: 1px solid #ccc; /* 경계선 추가 (선택 사항) */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-messages {
+      flex: 1; /* 채팅 메시지 컨테이너가 나머지 공간을 채우도록 설정 */
+      overflow-y: auto; /* 세로 스크롤 활성화 */
+      padding: 10px; /* 내부 여백 (선택 사항) */
+    }
+
+    .chat-input {
+      /* 채팅 입력 칸 스타일링 (고정) */
+      height: 50px; /* 원하는 입력 칸 높이 설정 */
+      border-top: 1px solid #ccc; /* 상단 경계선 추가 (선택 사항) */
+    }
     [v-cloak] {
       display: none;
     }
@@ -19,6 +38,15 @@
   <div>
     <h2>{{room.name}}</h2>
   </div>
+  <div class="chat-container">
+    <div class="chat-messages">
+  <ul class="list-group" style="overflow: auto">
+    <li class="list-group-item" v-for="message in messages">
+      {{message.sender}} - {{message.message}}
+    </li>
+  </ul>
+    </div>
+    <div class="chat-input">
   <div class="input-group">
     <div class="input-group-prepend">
       <label class="input-group-text">내용</label>
@@ -28,12 +56,8 @@
       <button class="btn btn-primary" type="button" @click="sendMessage">보내기</button>
     </div>
   </div>
-  <ul class="list-group">
-    <li class="list-group-item" v-for="message in messages">
-      {{message.sender}} - {{message.message}}
-    </li>
-  </ul>
-  <div></div>
+    </div>
+</div>
 </div>
 <!-- JavaScript -->
 <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
@@ -65,36 +89,26 @@
     methods: {
       findRoom: function() {
         axios.get('/chat/room/'+this.roomId).then(response => { this.room = response.data; });
-        console.log("z");
       },
       sendMessage: function() {
         ws.send("/app/chat/message", {}, JSON.stringify({type:'TALK', roomId:this.roomId, sender:this.sender, message:this.message}));
         this.message = '';
-        console.log("zz");
       },
       recvMessage: function(recv) {
-        this.messages.unshift({"type":recv.type,"sender":recv.type==='ENTER'?'[알림]':recv.sender,"message":recv.message})
-        console.log("zzz");
+        this.messages.push({"type":recv.type,"sender":recv.type==='ENTER'?'[알림]':recv.sender,"message":recv.message})
       }
     }
   });
   connect();
-
-
-
-
   function connect() {
     // pub/sub event
     ws.connect({}, function(frame) {
       ws.subscribe("/topic/chat/room/"+vm.$data.roomId, function(message) {
-        console.log("나ㄴㄴㄴ");
         var recv = JSON.parse(message.body);
         vm.recvMessage(recv);
-        console.log("나");
 
       });
       ws.send("/app/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.roomId, sender:vm.$data.sender}));
-      console.log("다");
     }, function(error) {
       if(reconnect++ <= 5) {
         setTimeout(function() {
@@ -106,7 +120,6 @@
       }
     });
   }
-  //connect();
 </script>
 </body>
 </html>
